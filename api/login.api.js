@@ -1,6 +1,6 @@
 const app = require('../app').app;
 const userService = require('../services/user.service');
-const auth = require('../components/userAuth');
+
 
 /**
  * login
@@ -33,6 +33,18 @@ app.get('/api/user/userData/:id', (req, res) => {
 app.post('/api/user/register', (req, res) => {
 
     userService.registerUser(req.body).then(body => {
+
+        res.send(body);
+    }).catch((err) => {
+        res.status(400).send(`${err}`);
+    });
+});
+/**
+ * User email confirmed
+ */
+app.get('/api/user/confirmEmail/:token', (req, res) => {
+
+    userService.confirmEmail(req.params.token).then(body => {
 
         res.send(body);
     }).catch((err) => {

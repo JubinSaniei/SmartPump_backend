@@ -68,6 +68,40 @@
       "password": "$2b$10$SuLrBXJqzZEmLGqYLdWn.eAD83dvHlSlbaHEVTMtREtJRCthl9zjO",
       "phone": 6196066666,
       "address": "1555 Costa Mesa, 92626"
+    },
+    {
+      "_id": "e24557f8-7c1e-4f3e-97ab-d62be27753fc",
+      "guid": "07b39ca6-1b7c-4032-a732-ab1ee54bda2a",
+      "isActive": "true",
+      "balance": {
+        "deposit": [
+          {
+            "value": null,
+            "date": null
+          }
+        ],
+        "withdraw": [
+          {
+            "value": null,
+            "date": null
+          }
+        ],
+        "totalDeposit": 0,
+        "totalWithdraw": 0
+      },
+      "picture": "http://placehold.it/32x32",
+      "age": null,
+      "eyeColor": null,
+      "name": {
+        "first": "jubin",
+        "last": "saniei"
+      },
+      "company": null,
+      "email": "jubin.saniei@gmail.com",
+      "salt": "23derd*334",
+      "password": "$2b$10$HPL3YOLusC/P9TuY3EwtbusxbbBAVuQ91DJ29am9xfy.SH6IrbyYW",
+      "phone": null,
+      "address": null
     }
   ]
 }

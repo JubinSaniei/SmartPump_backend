@@ -7,6 +7,8 @@ const fs = require('fs');
 const path = require('path');
 const hashPassword = require('../components/hashPassword');
 const encrDecr = require('crypto-js');
+const app = require('../app').app;
+const request = require('request');
 
 const getUserData = async (id) => {
 
@@ -141,7 +143,62 @@ const registerUser = async (data) => {
     if (!result) {
         return Promise.reject('System error. please try again');
     }
+    const email = await sendEmailConfirm(result.guid, result.email);
+
     return Promise.resolve(`${value.firstName} ${value.lastName} successfully created. Email validation sent to your email address, please confirm your email`);
+};
+
+sendEmailConfirm = async (userId, email) => {
+    console.log(userId, email);
+    // check if password is correct
+    const routePath = (`${path.resolve()}/config/`);
+    // Best place to privateKey is in the enviroment Variable, stored this on the file for this projcet.
+    const privateKey = await fs.readFileSync(`${routePath}private.key`, 'UTF8');
+
+    // Generate Token
+    const token = jwt.sign({
+        exp: Math.floor(Date.now() / 1000) + (60 * 600),
+        guid: userId
+
+    }, privateKey, {
+        algorithm: 'HS512'
+    });
+
+    // Sending request to mail service API
+    let response = await request.post('http://jmail.jubinsaniei.com/api/email/emailConfirm', {
+        json: {
+            emailTo: email,
+            Subject: 'Please confirm your email',
+            Message: `<p> To confirm your email please </p> <a href="http://smartpump.jubinsaniei.com/api/user/confirmEmail/${token}">Click Here</a>`
+        }
+    }, (error, res, body) => {
+        if (error) {
+            console.log(error);
+            return error;
+        }
+    });
+
+
+};
+
+// Get request from HTTP header
+const confirmEmail = async (emailToken) => {
+
+    // validate token
+    const verifyToken = await tok.discoverToken(emailToken);
+    if (!verifyToken) {
+        return;
+    }
+    // Find user information
+    const findUser = await userRepo.findById(verifyToken.guid);
+    if (!findUser) {
+        return;
+    }
+
+    // Activate user
+    const activation = await userRepo.activateUser(findUser.guid);
+    return Promise.resolve('Account is activated.');
+
 };
 
 const update = async (data) => {
@@ -342,5 +399,6 @@ module.exports = {
     resetPassword,
     deposit,
     withdraw,
-    accountDelete
+    accountDelete,
+    confirmEmail
 };

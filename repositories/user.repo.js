@@ -7,6 +7,9 @@ const db = low(adapter);
 
 
 const registerUser = async (firstName, lastName, email, password, status, picture) => {
+    const _id = uuid.v4();
+    const guid = uuid.v4();
+
     db.defaults({
             users: [],
         })
@@ -14,8 +17,8 @@ const registerUser = async (firstName, lastName, email, password, status, pictur
 
     const dbSaved = await db.get('users')
         .push({
-            '_id': uuid.v4(),
-            'guid': uuid.v4(),
+            '_id': _id,
+            'guid': guid,
             'isActive': status,
             'balance': {
                 'deposit': [{
@@ -46,7 +49,11 @@ const registerUser = async (firstName, lastName, email, password, status, pictur
         })
         .write();
 
-    return Promise.resolve(dbSaved);
+
+
+    return Promise.resolve(dbSaved.find(x =>
+        x.guid === guid
+    ));
 };
 
 const findById = async (guid) => {
@@ -120,6 +127,16 @@ const confirmPass = async (guid) => {
         });
     }
 
+};
+const activateUser = async (guid) => {
+    const dbUpdate = await db.get('users')
+        .find({
+            guid: guid
+        })
+        .assign({
+            'isActive': 'true',
+        })
+        .write();
 };
 const update = async (guid, firstName, lastName, phone, address, age, eyeColor, picture, company) => {
 
@@ -261,7 +278,7 @@ const accountDelete = async (id) => {
 
     const userAccount = await db.get('users')
 
-    .remove(a => a._id === id).write();
+        .remove(a => a._id === id).write();
 
     if (userAccount) {
         return Promise.resolve(userAccount);
@@ -271,6 +288,7 @@ const accountDelete = async (id) => {
 module.exports = {
 
     registerUser,
+    activateUser,
     findById,
     confirmPass,
     findByEmail,
